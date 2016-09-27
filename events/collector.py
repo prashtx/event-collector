@@ -40,6 +40,10 @@ _CORS_HEADERS = {
     "Vary": "Origin",
 }
 
+_ROBOTS_TXT = """\
+User-Agent: *
+Disallow: /
+"""
 
 def is_subdomain(domain, base_domain):
     """Return whether or not domain is a subdomain of base_domain."""
@@ -254,6 +258,9 @@ def health_check(request):
         "mood": u"\U0001F357",
     }
 
+def robots_txt(request):
+    """/robots.txt directives"""
+    return _ROBOTS_TXT
 
 def make_app(global_config, **settings):
     """Paste entry point: return a configured WSGI application."""
@@ -290,5 +297,7 @@ def make_app(global_config, **settings):
     config.add_view(collector.check_cors, route_name="v1_options")
     config.add_route("health", "/health")
     config.add_view(health_check, route_name="health", renderer="json")
+    config.add_route("robots.txt", "/robots.txt")
+    config.add_view(robots_txt, route_name="robots.txt")
 
     return config.make_wsgi_app()
